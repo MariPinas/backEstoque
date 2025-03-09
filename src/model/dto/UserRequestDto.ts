@@ -1,13 +1,11 @@
-
 export class UserRequestDto {
-    nome: string;
-    email: string;
-    senha: string;
+  nome: string;
+  email: string;
+  senha: string;
 
-
-    constructor(nome?: string, email?: string, senha?: string) {
-        this.nome = nome || '';
-        this.email = (email || '');
-        this.senha = (senha || '');
-    }
+  constructor(nome?: string, email?: string, senha?: string) {
+    this.nome = nome || "";
+    this.email = email || "";
+    this.senha = senha || "";
+  }
 }
