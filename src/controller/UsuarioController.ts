@@ -2,64 +2,60 @@ import { Request, Response } from "express";
 import { UsuarioService } from "../service/UsuarioService";
 import { CustomRequest } from "../middleware/authMiddleware";
 
-const productService = new UsuarioService();
+const usuarioService = new UsuarioService();
 
-export async function atualizarUsuario (req: Request, res: Response){
-    try {
-        const produto = await productService.atualizarUsuario(req.body);
-        res.status(200).json(
-            {
-                mensagem:"Usuario atualizado com sucesso!",
-                produto:produto
-            }
-        );
-    } catch (error: any) {
-        res.status(400).json({ message: error.message});
+// @Put
+export async function atualizarUsuario(req: Request, res: Response): Promise<Response> {
+  try {
+    const usuario = await usuarioService.atualizarUsuario(req.body);
+    return res.status(200).json({
+      mensagem: "Usuário atualizado com sucesso!",
+      usuario: usuario,
+    });
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+}
+
+// @Delete
+export async function deletarUsuario(req: Request, res: Response): Promise<Response> {
+  try {
+    const usuario = await usuarioService.deletarUsuario(req.body);
+    return res.status(200).json({
+      mensagem: "Usuário deletado com sucesso!",
+      usuario: usuario,
+    });
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+}
+
+// @Get("id")
+export async function filtrarUsuario(req: CustomRequest, res: Response): Promise<Response> {
+  try {
+    const userId = req.user?.id; // middleware de autenticacao JWT.
+
+    if (!userId) {
+      return res.status(403).json({ message: "Usuário não autenticado!" });
     }
-};
 
-export async function deletarUsuario (req: Request, res: Response){
-    try {
-        const produto = await productService.deletarUsuario(req.body);
-        res.status(200).json(
-            {
-                mensagem:"Usuario deletado com sucesso!",
-                produto:produto
-            }
-        );
-    } catch (error: any) {
-        res.status(400).json({ message: error.message});
+    const id = parseInt(req.query.id as string, 10);
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "ID do usuário inválido!" });
     }
-};
 
-export async function filtrarUsuario(req: CustomRequest, res: Response) {
-    try {
-        // pega o id do usuario autenticado/logado
-        const userId = req.user?.id;  // middleware de autenticacao JWT.
-        
+    const usuario = await usuarioService.filtrarUsuario(id);
 
-        if (!userId) {
-            return res.status(403).json({ message: "Usuário não autenticado!" });
-        }
-
-        const id = parseInt(req.query.id as string, 10);
-
-        if (isNaN(id)) {
-            return res.status(400).json({ message: "ID do produto inválido!" });
-        }
-
-        const produto = await productService.filtrarUsuario(id);
-
-        if (!produto) {
-            return res.status(404).json({ message: "Usuario não encontrado!" });
-        }
-
-        res.status(200).json({
-            mensagem: "Usuario encontrado com sucesso!",
-            produto: produto,
-        });
-    } catch (error: any) {
-        res.status(400).json({ message: error.message });
+    if (!usuario) {
+      return res.status(404).json({ message: "Usuário não encontrado!" });
     }
-};
 
+    return res.status(200).json({
+      mensagem: "Usuário encontrado com sucesso!",
+      usuario: usuario,
+    });
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+}
