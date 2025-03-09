@@ -42,9 +42,7 @@ export class UsuarioRepository {
       throw err;
     }
   }
-  async updateUsuario(
-    usuario: Partial<Usuario> & { id: number }
-  ): Promise<Usuario> {
+  async updateUsuario( usuario: Usuario): Promise<Usuario> {
     let query = "UPDATE estoque.Usuario SET";
     const values: any[] = [];
     if (usuario.nome) {
@@ -67,7 +65,7 @@ export class UsuarioRepository {
       const resultado = await executarComandoSQL(query, values);
       console.log("Usuário atualizado com sucesso, ID: ", resultado);
       return new Promise<Usuario>((resolve) => {
-        resolve(usuario as Usuario);
+        resolve(resultado);
       });
     } catch (err) {
       console.error(`Erro ao atualizar o usuário de ID ${usuario.id}:`, err);
@@ -104,4 +102,28 @@ export class UsuarioRepository {
       throw err;
     }
   }
+  async findByEmail(email: string): Promise<Usuario | null> {
+    const query = 'SELECT * FROM usuarios WHERE email = ?'; 
+    
+    try {
+        const resultado = await executarComandoSQL(query, [email]);
+
+        if (resultado.length === 0) {
+            return null; // nao achou usuario
+        }
+
+        //mapea os dados do banco para o usuario
+        const user = new Usuario(
+            resultado[0].id,
+            resultado[0].nome,
+            resultado[0].email,
+            resultado[0].senha,
+        );
+
+        return user;
+    } catch (error) {
+        console.error('Erro ao buscar o usuário por e-mail:', error);
+        throw error;
+    }
+}
 }

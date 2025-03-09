@@ -49,7 +49,7 @@ export async function deletarProduto (req: Request, res: Response){
 export async function filtrarProduto(req: CustomRequest, res: Response) {
     try {
         // pega o id do usuario autenticado/logado
-        const userId = req.user?.id;  // middleware de autenticação JWT.
+        const userId = req.user?.id;  // middleware de autenticacao JWT.
         
         if (!userId) {
             return res.status(403).json({ message: "Usuário não autenticado!" });
