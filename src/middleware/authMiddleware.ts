@@ -7,7 +7,7 @@ export interface CustomRequest extends Request {
     user?: { id: number };  
 }
 
-// Middleware para verificar o token JWT
+// middleware para verificar o token JWT
 export function verifyJWT(req: CustomRequest, res: Response, next: NextFunction) {
     //pega o token
     const token = req.headers.authorization?.split(' ')[1];  

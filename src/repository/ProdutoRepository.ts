@@ -52,73 +52,70 @@ export class ProdutoRepository {
     }
   }
 
-    async updateProduto(produto: Produto): Promise<void> {
-    let query = 'UPDATE estoque.Produto SET';
+  async updateProduto(produto: Produto): Promise<void> {
+    let query = "UPDATE estoque.Produto SET";
     const params: Array<any> = [];
     const fields: string[] = [];
 
     if (produto.nome) {
-        fields.push('nome = ?');
-        params.push(produto.nome);
+      fields.push("nome = ?");
+      params.push(produto.nome);
     }
 
     if (produto.preco) {
-        fields.push('preco = ?');
-        params.push(produto.preco);
+      fields.push("preco = ?");
+      params.push(produto.preco);
     }
 
     if (produto.descricao) {
-        fields.push('descricao = ?');
-        params.push(produto.descricao);
+      fields.push("descricao = ?");
+      params.push(produto.descricao);
     }
 
     if (produto.imagem) {
-        fields.push('imagem = ?');
-        params.push(produto.imagem);
+      fields.push("imagem = ?");
+      params.push(produto.imagem);
     }
 
     if (produto.quantidade) {
-        fields.push('quantidade = ?');
-        params.push(produto.quantidade);
+      fields.push("quantidade = ?");
+      params.push(produto.quantidade);
     }
 
-    fields.push('WHERE id = ? AND usuario_id = ?');
+    fields.push("WHERE id = ? AND usuario_id = ?");
     params.push(produto.id, produto.usuario_id);
 
     //juntar todos os campos
-    query += ' ' + fields.join(', ');
+    query += " " + fields.join(", ");
     try {
-        const resultado = await executarComandoSQL(query, params);
+      const resultado = await executarComandoSQL(query, params);
 
-        if (resultado.affectedRows === 0) {
-            throw new Error(
-                'Nenhum produto encontrado ou o usuário não tem permissão para atualizar este produto'
-            );
-        }
+      if (resultado.affectedRows === 0) {
+        throw new Error(
+          "Nenhum produto encontrado ou o usuário não tem permissão para atualizar este produto"
+        );
+      }
 
-        console.log('Produto atualizado com sucesso.');
+      console.log("Produto atualizado com sucesso.");
     } catch (err) {
-        console.error('Erro ao atualizar o produto:', err);
-        throw err;
+      console.error("Erro ao atualizar o produto:", err);
+      throw err;
     }
-}
+  }
 
   async deleteProduto(produto: Produto): Promise<Produto> {
     const query = "DELETE FROM estoque.Produto where id = ? AND usuario_id= ?;";
 
     try {
-      const resultado = await executarComandoSQL(query, [
-        produto.id,
-        produto.usuario_id,
-      ]);
+      const resultado = await executarComandoSQL(query, [produto.id, produto.usuario_id]);
       if (resultado.affectedRows === 0) {
         throw new Error(
           "Nenhum produto encontrado ou o usuário não tem permissão para deletar este produto"
         );
       }
-      console.log("Produto deletado com sucesso: ", produto);
+      console.log("Produto deletado com sucesso!");
       return new Promise<Produto>((resolve) => {
-        resolve(produto);
+        resolve(resultado);
       });
     } catch (err: any) {
       console.error(
@@ -160,6 +157,18 @@ export class ProdutoRepository {
       });
     } catch (err: any) {
       console.error(`Falha ao listar os produtos gerando o erro: ${err}`);
+      throw err;
+    }
+  }
+
+  async buscaProdutoPorIDeNome(id: number, nome: string): Promise<Produto[]> {
+    const query = "SELECT * FROM Produto WHERE id = ? AND nome = ?";
+
+    try {
+      const resultado = await executarComandoSQL(query, [id, nome]);
+      return resultado;
+    } catch (err: any) {
+      console.error(`Falha ao buscar produto: ${err}`);
       throw err;
     }
   }

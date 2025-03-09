@@ -87,12 +87,12 @@ export class UsuarioRepository {
   async filterUsuarioById(id: number): Promise<Usuario> {
     const query = "SELECT * FROM estoque.Usuario WHERE id = ?";
     try {
-      const resultado = await executarComandoSQL(query, [id]);
+        const resultado = await executarComandoSQL(query, [id]);
       if (resultado.length > 0) {
         const usuario: Usuario = resultado[0];
         console.log("Usuário localizado com sucesso:", usuario);
         return new Promise<Usuario>((resolve) => {
-          resolve(usuario);
+          resolve(resultado);
         });
       } else {
         throw new Error(`Usuário de ID ${id} não encontrado.`);
