@@ -1,15 +1,17 @@
 
 export class ProductRequestDto {
-    name: string;
-    price: number;
-    description: string;
-    image: string;
+    nome: string;
+    preco: number;
+    descricao: string;
+    imagem: string;
+    quantidade:number;
 
 
-    constructor(name?: string, price?: number, description?: string, image?: string) {
-        this.name = name || '';
-        this.price = price || 0;
-        this.description = (description || '');
-        this.image = (image || '');
+    constructor(nome?: string, preco?: number, descricao?: string, imagem?: string, quantidade?:number) {
+        this.nome = nome || '';
+        this.preco = preco || 0;
+        this.descricao = (descricao || '');
+        this.imagem = (imagem || '');
+        this.quantidade = quantidade || 0;
     }
 }
