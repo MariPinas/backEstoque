@@ -42,9 +42,11 @@ export class UsuarioRepository {
       throw err;
     }
   }
-  async updateUsuario( usuario: Usuario): Promise<Usuario> {
+  async updateUsuario(usuario: Usuario): Promise<Usuario> {
+    console.log(usuario.id, "usuario id repository")
     let query = "UPDATE estoque.Usuario SET";
     const values: any[] = [];
+  
     if (usuario.nome) {
       query += " nome = ?,";
       values.push(usuario.nome);
@@ -60,7 +62,7 @@ export class UsuarioRepository {
     query = query.slice(0, -1);
     query += " WHERE id = ?";
     values.push(usuario.id);
-
+  
     try {
       const resultado = await executarComandoSQL(query, values);
       console.log("Usuário atualizado com sucesso, ID: ", resultado);
@@ -72,6 +74,7 @@ export class UsuarioRepository {
       throw err;
     }
   }
+  
 
   async deleteUsuario(id: number): Promise<void> {
     const query = "DELETE FROM estoque.Usuario WHERE id = ?";
@@ -103,7 +106,8 @@ export class UsuarioRepository {
     }
   }
   async findByEmail(email: string): Promise<Usuario | null> {
-    const query = 'SELECT * FROM usuarios WHERE email = ?'; 
+    console.log("MANO")
+    const query = 'SELECT * FROM Usuario WHERE email = ?'; 
     
     try {
         const resultado = await executarComandoSQL(query, [email]);

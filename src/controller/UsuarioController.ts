@@ -5,9 +5,16 @@ import { CustomRequest } from "../middleware/authMiddleware";
 const usuarioService = new UsuarioService();
 
 // @Put
-export async function atualizarUsuario(req: Request, res: Response): Promise<Response> {
+export async function atualizarUsuario(req: CustomRequest, res: Response): Promise<Response> {
   try {
-    const usuario = await usuarioService.atualizarUsuario(req.body);
+    const usuarioId = req.user?.id;
+    if (!usuarioId) {
+      return res.status(403).json({ message: "Usuário não autenticado!" });
+    }
+    const { senha, ...dadosAtualizados } = req.body;
+    console.log(usuarioId, "controller id");
+    console.log(req.body, "dados do corpo da requisição");
+    const usuario = await usuarioService.atualizarUsuario(usuarioId, dadosAtualizados );
     return res.status(200).json({
       mensagem: "Usuário atualizado com sucesso!",
       usuario: usuario,
@@ -18,9 +25,15 @@ export async function atualizarUsuario(req: Request, res: Response): Promise<Res
 }
 
 // @Delete
-export async function deletarUsuario(req: Request, res: Response): Promise<Response> {
+export async function deletarUsuario(req: CustomRequest, res: Response): Promise<Response> {
   try {
-    const usuario = await usuarioService.deletarUsuario(req.body);
+    const usuarioId = req.user?.id;
+
+    if (!usuarioId) {
+      return res.status(400).json({ message: "ID do usuário não fornecido." });
+    }
+
+    const usuario = await usuarioService.deletarUsuario(usuarioId);
     return res.status(200).json({
       mensagem: "Usuário deletado com sucesso!",
       usuario: usuario,
@@ -30,22 +43,17 @@ export async function deletarUsuario(req: Request, res: Response): Promise<Respo
   }
 }
 
+
 // @Get("id")
 export async function filtrarUsuario(req: CustomRequest, res: Response): Promise<Response> {
   try {
-    const userId = req.user?.id; // middleware de autenticacao JWT.
+    const userId = req.user?.id;
 
     if (!userId) {
       return res.status(403).json({ message: "Usuário não autenticado!" });
     }
 
-    const id = parseInt(req.query.id as string, 10);
-
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "ID do usuário inválido!" });
-    }
-
-    const usuario = await usuarioService.filtrarUsuario(id);
+    const usuario = await usuarioService.filtrarUsuario(userId);
 
     if (!usuario) {
       return res.status(404).json({ message: "Usuário não encontrado!" });

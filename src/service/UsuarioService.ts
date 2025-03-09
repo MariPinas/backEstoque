@@ -5,35 +5,34 @@ export class UsuarioService {
   usuarioRepository: UsuarioRepository = new UsuarioRepository();
 
 
-  async atualizarUsuario(usuarioData: any): Promise<Usuario> {
-    const { id, nome, email, senha } = usuarioData;
+  async atualizarUsuario(id: number, usuarioData: any): Promise<Usuario> {
+    const { nome, email, senha } = usuarioData;
 
     const usuario = new Usuario(id, nome, email, senha);
-
+    console.log(id, "ID DO BAGULHO")
     await this.usuarioRepository.updateUsuario(usuario);
     console.log("Service - Usuario atualizado: ", usuario);
     return usuario;
   }
 
-  async deletarUsuario(usuarioData: any): Promise<Usuario | null> {
-    const {id, nome, email, senha} = usuarioData;
-      
-
+  async deletarUsuario(id: number): Promise<Usuario | null> {
     try {
-        const usuario = new Usuario(id, nome, email, senha);
         const usuarioEncontrado = await this.usuarioRepository.filterUsuarioById(id);
 
-      if (!usuarioEncontrado) {
-        return null; 
-      }
-      await this.usuarioRepository.deleteUsuario(id);
+        if (!usuarioEncontrado) {
+            return null; 
+        }
 
-      return usuario;
+        // Deletando o usuário
+        await this.usuarioRepository.deleteUsuario(id);
+
+        return usuarioEncontrado;
     } catch (error) {
-      console.error("Erro ao deletar usuário:", error);
-      throw new Error("Erro ao deletar usuário.");
+        console.error("Erro ao deletar usuário:", error);
+        throw new Error("Erro ao deletar usuário.");
     }
-  }
+}
+
 
   async filtrarUsuario(id: number): Promise<Usuario> {
     const usuario = await this.usuarioRepository.filterUsuarioById(id);

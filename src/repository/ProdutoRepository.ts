@@ -16,7 +16,7 @@ export class ProdutoRepository {
             imagem VARCHAR(255) NOT NULL,
             quantidade INT NOT NULL,
             usuario_id INT NOT NULL,
-            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+            FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
             
         )`;
 
