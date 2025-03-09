@@ -5,6 +5,8 @@ const authService = new AuthService();
 
 // Cadastro
 export async function register(req: Request, res: Response) {
+
+    
   try {
     const { email, nome, senha } = req.body;
     const result = await authService.registerUser(email, nome, senha);
