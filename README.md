@@ -1,2 +1,2 @@
 # backEstoque
-# -> Arquivo de exportação do postman para testar o back esta no repositorio
+# -> Arquivo de exportação do postman para testar o back está no repositorio
