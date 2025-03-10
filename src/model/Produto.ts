@@ -3,7 +3,6 @@ export class Produto {
   nome: string;
   preco: number;
   descricao: string;
-  imagem: string;
   quantidade: number;
   usuario_id: number;
 
@@ -12,7 +11,6 @@ export class Produto {
     nome?: string,
     preco?: number,
     descricao?: string,
-    imagem?: string,
     quantidade?: number,
     usuario_id?: number
   ) {
@@ -20,40 +18,49 @@ export class Produto {
       nome,
       preco,
       descricao,
-      imagem,
       quantidade,
       usuario_id
     );
-    this.id = id || 0;
-    this.nome = nome || "";
-    this.preco = preco || 0;
-    this.descricao = descricao || "";
-    this.imagem = imagem || "";
-    this.quantidade = quantidade || 0;
-    this.usuario_id = usuario_id || 0;
+
+    this.id = id ?? 0;
+    this.nome = nome ?? "";
+    this.preco = preco ?? 0;
+    this.descricao = descricao ?? "";
+    this.quantidade = quantidade ?? 0;
+    this.usuario_id = usuario_id ?? 0;
   }
 
   private validatesInformation(
     nome: any,
     preco: any,
     descricao: any,
-    imagem: any,
     quantidade: any,
     usuario_id: any
   ) {
     let error = "";
+
+
+    if (
+      nome == null ||
+      preco == null ||
+      descricao == null ||
+      quantidade == null ||
+      usuario_id == null
+    ) {
+      error += "Informações incompletas. ";
+    }
+
     if (
       typeof nome !== "string" ||
       typeof preco !== "number" ||
       typeof descricao !== "string" ||
-      typeof imagem !== "string" ||
       typeof quantidade !== "number" ||
       typeof usuario_id !== "number"
     ) {
-      error += "Informações incompletas ou incorretas. ";
+      error += "Informações incorretas. ";
     }
 
-    if (error != "") {
+    if (error !== "") {
       throw new Error(error);
     }
   }

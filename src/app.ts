@@ -14,6 +14,7 @@ import {
 import { register, login, updatePassword } from "./controller/authController";
 import { verifyJWT } from "./middleware/authMiddleware";
 import path from "path";
+import { upload } from "./middleware/upload";
 
 const app = express();
 const PORT = 3040;
@@ -31,18 +32,18 @@ app.put("/produto/:id", verifyJWT, atualizarProduto); // PUT
 app.delete("/produto/:id", verifyJWT, deletarProduto); // DELETE
 
 // Usuários
-app.get("/usuario", verifyJWT, filtrarUsuario); // GET Usuário
-app.put("/usuario", verifyJWT, atualizarUsuario); // PUT Atualizar Usuário
-app.delete("/usuario", verifyJWT, deletarUsuario); // DELETE Usuário
+app.get("/usuario", verifyJWT, filtrarUsuario); // GET 
+app.put("/usuario", verifyJWT, atualizarUsuario); // PUT  
+app.delete("/usuario", verifyJWT, deletarUsuario); // DELETE 
 
 // Cadastro de Usuário
-app.post("/register", register); // POST para cadastro de usuário
+app.post("/register", register); // POST
 
 // Login de Usuário
-app.post("/login", login); // POST para login de usuário
+app.post("/login", login); // POST 
 
 // Atualização de Senha
-app.put("/usuario/senha", verifyJWT, updatePassword); // PUT para atualizar a senha do usuário
+app.put("/usuario/senha", verifyJWT, updatePassword); // PUT
 
 app.listen(PORT, () => {
   console.log(`API online na porta: ${PORT}`);

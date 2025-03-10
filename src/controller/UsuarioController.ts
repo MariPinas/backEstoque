@@ -5,27 +5,30 @@ import { CustomRequest } from "../middleware/authMiddleware";
 const usuarioService = new UsuarioService();
 
 // @Put
-export async function atualizarUsuario(req: CustomRequest, res: Response): Promise<Response> {
+export async function atualizarUsuario(req: CustomRequest, res: Response) {
   try {
     const usuarioId = req.user?.id;
+    const dados = req.body;
     if (!usuarioId) {
       return res.status(403).json({ message: "Usuário não autenticado!" });
     }
-    const { senha, ...dadosAtualizados } = req.body;
-    console.log(usuarioId, "controller id");
-    console.log(req.body, "dados do corpo da requisição");
-    const usuario = await usuarioService.atualizarUsuario(usuarioId, dadosAtualizados );
-    return res.status(200).json({
+    console.log(dados, "dados controller")
+    console.log(usuarioId, "usu controller")
+    const newUser = await usuarioService.atualizarUsuario(usuarioId, dados);
+    res.status(200).json({
       mensagem: "Usuário atualizado com sucesso!",
-      usuario: usuario,
+      produto: newUser,
     });
   } catch (error: any) {
-    return res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 }
 
 // @Delete
-export async function deletarUsuario(req: CustomRequest, res: Response): Promise<Response> {
+export async function deletarUsuario(
+  req: CustomRequest,
+  res: Response
+): Promise<Response> {
   try {
     const usuarioId = req.user?.id;
 
@@ -43,9 +46,11 @@ export async function deletarUsuario(req: CustomRequest, res: Response): Promise
   }
 }
 
-
 // @Get("id")
-export async function filtrarUsuario(req: CustomRequest, res: Response): Promise<Response> {
+export async function filtrarUsuario(
+  req: CustomRequest,
+  res: Response
+): Promise<Response> {
   try {
     const userId = req.user?.id;
 

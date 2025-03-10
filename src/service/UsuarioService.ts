@@ -6,10 +6,10 @@ export class UsuarioService {
 
 
   async atualizarUsuario(id: number, usuarioData: any): Promise<Usuario> {
-    const { nome, email, senha } = usuarioData;
-
+    console.log(id, "ID DO BAGULHO 1 service")
+    const{nome, email,senha} = usuarioData;
     const usuario = new Usuario(id, nome, email, senha);
-    console.log(id, "ID DO BAGULHO")
+    console.log(id, "ID DO BAGULHO service")
     await this.usuarioRepository.updateUsuario(usuario);
     console.log("Service - Usuario atualizado: ", usuario);
     return usuario;

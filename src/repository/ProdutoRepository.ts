@@ -30,14 +30,14 @@ export class ProdutoRepository {
 
   async insertProduto(produto: Produto): Promise<Produto> {
     const query =
-      "INSERT INTO estoque.Produto (nome, preco, descricao, imagem, quantidade, usuario_id) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO estoque.Produto (nome, preco, descricao, quantidade, usuario_id) VALUES (?, ?, ?, ?, ?)";
 
     try {
+      console.log("repo");
       const resultado = await executarComandoSQL(query, [
         produto.nome,
         produto.preco,
         produto.descricao,
-        produto.imagem,
         produto.quantidade,
         produto.usuario_id,
       ]);
@@ -53,6 +53,9 @@ export class ProdutoRepository {
   }
 
   async updateProduto(produto: Produto): Promise<void> {
+    console.log("id", produto.id)
+    console.log("aaaaaaa4")
+    console.log("user", produto.usuario_id)
     let query = "UPDATE estoque.Produto SET";
     const params: Array<any> = [];
     const fields: string[] = [];
@@ -72,22 +75,20 @@ export class ProdutoRepository {
       params.push(produto.descricao);
     }
 
-    if (produto.imagem) {
-      fields.push("imagem = ?");
-      params.push(produto.imagem);
-    }
-
     if (produto.quantidade) {
       fields.push("quantidade = ?");
       params.push(produto.quantidade);
     }
 
-    fields.push("WHERE id = ? AND usuario_id = ?");
+    // Juntar todos os campos
+    query += " " + fields.join(", ");
+    query += " WHERE id = ? AND usuario_id = ?";
     params.push(produto.id, produto.usuario_id);
 
-    //juntar todos os campos
-    query += " " + fields.join(", ");
     try {
+      console.log("SQL Gerado:", query);
+      console.log("Parâmetros:", params);
+
       const resultado = await executarComandoSQL(query, params);
 
       if (resultado.affectedRows === 0) {
@@ -107,7 +108,10 @@ export class ProdutoRepository {
     const query = "DELETE FROM estoque.Produto where id = ? AND usuario_id= ?;";
 
     try {
-      const resultado = await executarComandoSQL(query, [produto.id, produto.usuario_id]);
+      const resultado = await executarComandoSQL(query, [
+        produto.id,
+        produto.usuario_id,
+      ]);
       if (resultado.affectedRows === 0) {
         throw new Error(
           "Nenhum produto encontrado ou o usuário não tem permissão para deletar este produto"
@@ -125,7 +129,7 @@ export class ProdutoRepository {
     }
   }
 
-  async filterProduto(id: number, usuario_id: number): Promise<Produto> {
+  async filterProduto(id: number, usuario_id: number): Promise<Produto[]> {
     const query = "SELECT * FROM estoque.Produto where id = ? and usuario_id=?";
 
     try {
@@ -136,7 +140,7 @@ export class ProdutoRepository {
         );
       }
       console.log("Produto localizado com sucesso, ID: ", resultado);
-      return new Promise<Produto>((resolve) => {
+      return new Promise<Produto[]>((resolve) => {
         resolve(resultado);
       });
     } catch (err: any) {
@@ -162,8 +166,10 @@ export class ProdutoRepository {
   }
 
   async buscaProdutoPorIDeNome(id: number, nome: string): Promise<Produto[]> {
+    if (!id || !nome) {
+      throw new Error("ID ou nome não fornecido");
+    }
     const query = "SELECT * FROM Produto WHERE id = ? AND nome = ?";
-
     try {
       const resultado = await executarComandoSQL(query, [id, nome]);
       return resultado;
