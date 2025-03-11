@@ -24,3 +24,4 @@ export function verifyJWT(req: CustomRequest, res: Response, next: NextFunction)
     return res.status(401).json({ message: 'Token inválido ou expirado!' });
   }
 }
+

@@ -1,12 +1,23 @@
 import { executarComandoSQL } from "../db/mysql";
+import { Produto } from "../model/Produto";
 import { Usuario } from "../model/Usuario";
 
+
 export class UsuarioRepository {
+  private static instance: UsuarioRepository;
+
   constructor() {
     this.createTable();
   }
 
-  private async createTable() {
+  public static getInstance(): UsuarioRepository {
+    if (!this.instance) {
+        this.instance = new UsuarioRepository();
+    }
+    return this.instance
+}
+
+  public async createTable() {
     const query = `
         CREATE TABLE IF NOT EXISTS estoque.Usuario (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,6 +35,8 @@ export class UsuarioRepository {
   }
 
   async insertUsuario(usuario: Usuario): Promise<Usuario> {
+    console.log("teste register usu repo");
+    console.log(usuario);
     const query =
       "INSERT INTO estoque.Usuario (nome, email, senha) VALUES (?, ?, ?)";
     try {
@@ -87,26 +100,32 @@ export class UsuarioRepository {
     }
   }
 
-  async filterUsuarioById(id: number): Promise<Usuario> {
-    const query = "SELECT * FROM estoque.Usuario WHERE id = ?";
+  async filterUsuarioById(id: number): Promise<Usuario & { produtos: Produto[] }> {
+    const usuarioQuery = "SELECT * FROM estoque.Usuario WHERE id = ?";
+    const produtosQuery = "SELECT * FROM estoque.Produto WHERE usuario_id = ?";
+
     try {
-        const resultado = await executarComandoSQL(query, [id]);
-      if (resultado.length > 0) {
-        const usuario: Usuario = resultado[0];
-        console.log("Usuário localizado com sucesso:", usuario);
-        return new Promise<Usuario>((resolve) => {
-          resolve(resultado);
-        });
-      } else {
-        throw new Error(`Usuário de ID ${id} não encontrado.`);
-      }
+        const usuarioResultado = await executarComandoSQL(usuarioQuery, [id]);
+        
+        if (usuarioResultado.length === 0) {
+            throw new Error("Usuário não encontrado");
+        }
+        
+        const usuario = usuarioResultado[0];
+
+        const produtosResultado = await executarComandoSQL(produtosQuery, [id]);
+
+        return {
+            ...usuario,
+            produtos: produtosResultado, 
+        };
     } catch (err) {
-      console.error(`Erro ao procurar o usuário de ID ${id}:`, err);
-      throw err;
+        console.error("Erro ao filtrar usuário:", err);
+        throw err;
     }
-  }
+}
+
   async findByEmail(email: string): Promise<Usuario | null> {
-    console.log("MANO")
     const query = 'SELECT * FROM Usuario WHERE email = ?'; 
     
     try {

@@ -1,7 +1,6 @@
 import { ProdutoService } from "./../service/ProdutoService";
 import { Request, Response } from "express";
 import { CustomRequest } from "../middleware/authMiddleware";
-import { upload } from "../middleware/upload";
 
 const produtoService = new ProdutoService();
 
@@ -176,4 +175,41 @@ export async function listarTodosProduto(
   } catch (error: any) {
     return res.status(400).json({ message: error.message });
   }
+  
 }
+// @Get("dashboard")
+export async function calcularDashboard(req: CustomRequest, res: Response): Promise<Response> {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(403).json({ message: "Usuário não autenticado!" });
+    }
+
+    const produtos = await produtoService.listarTodosProdutos(userId);
+
+    if (produtos.length === 0) {
+      return res.status(404).json({ message: "Nenhum produto encontrado!" });
+    }
+
+    const produtosBaixoEstoque = produtos.filter(produto => produto.quantidade <= 10);
+    const totalProdutos = produtos.length;
+    const valorTotal = produtos.reduce((total, produto) => total + produto.preco * produto.quantidade, 0);
+    const maiorQuantidade = await produtoService.getMaiorQuantidade(userId);
+    console.log(maiorQuantidade)
+
+    return res.status(200).json({
+      mensagem: "Dashboard calculado com sucesso!",
+      dados: {
+        totalProdutos,
+        valorTotal,
+        maiorQuantidade,
+        produtosBaixoEstoque,
+        produtos,
+      },
+    });
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+}
+

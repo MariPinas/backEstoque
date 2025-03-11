@@ -1,19 +1,26 @@
 import { executarComandoSQL } from "../db/mysql";
 import { Produto } from "../model/Produto";
-
+import { UsuarioRepository } from "./UsuarioRepository";
 export class ProdutoRepository {
   constructor() {
-    this.createTable();
+    this.createTables();
   }
 
-  private async createTable() {
+  private async createTables() {
+    await this.createUsuarioTable();
+    await this.createProdutoTable();
+  }
+  private async createUsuarioTable() {
+    const usuarioRepo = UsuarioRepository.getInstance();
+  }
+
+  private async createProdutoTable() {
     const query = `
         CREATE TABLE IF NOT EXISTS estoque.Produto (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(255) NOT NULL,
             preco DECIMAL(10, 2) NOT NULL,
             descricao TINYTEXT,
-            imagem VARCHAR(255) NOT NULL,
             quantidade INT NOT NULL,
             usuario_id INT NOT NULL,
             FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
@@ -178,4 +185,28 @@ export class ProdutoRepository {
       throw err;
     }
   }
+
+  async getMaiorQuantidade(usuario_id: number): Promise<Produto | null> {
+    console.log("chegou repo")
+    const query = `
+      SELECT * 
+      FROM estoque.Produto 
+      WHERE usuario_id = ? 
+      ORDER BY quantidade DESC 
+      LIMIT 1
+    `;
+
+    try {
+      const resultado = await executarComandoSQL(query, [usuario_id]);
+      if (resultado.length > 0) {
+        return resultado[0];  //primeiro produto da lista
+      } else {
+        return null; 
+      }
+    } catch (err: any) {
+      console.error(`Erro ao buscar o produto com maior quantidade: ${err}`);
+      throw err;
+    }
+  }
 }
+

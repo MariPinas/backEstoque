@@ -1,10 +1,12 @@
 import express from "express";
+import cors from 'cors';
 import {
   cadastrarProduto,
   listarTodosProduto,
   atualizarProduto,
   deletarProduto,
   filtrarProduto,
+  calcularDashboard,
 } from "./controller/ProdutoController";
 import {
   atualizarUsuario,
@@ -13,16 +15,13 @@ import {
 } from "./controller/UsuarioController";
 import { register, login, updatePassword } from "./controller/authController";
 import { verifyJWT } from "./middleware/authMiddleware";
-import path from "path";
-import { upload } from "./middleware/upload";
+
 
 const app = express();
 const PORT = 3040;
 
 app.use(express.json());
-
-// Servindo imagens
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(cors());
 
 // Produtos
 app.post("/produto", verifyJWT, cadastrarProduto); // CREATE
@@ -31,18 +30,22 @@ app.get("/produto/:id", verifyJWT, filtrarProduto); // GET BY ID
 app.put("/produto/:id", verifyJWT, atualizarProduto); // PUT
 app.delete("/produto/:id", verifyJWT, deletarProduto); // DELETE
 
+// Dashboard
+app.get("/dashboard", verifyJWT, calcularDashboard); // GET para calcular os dados do dashboard
+
 // Usuários
 app.get("/usuario", verifyJWT, filtrarUsuario); // GET 
 app.put("/usuario", verifyJWT, atualizarUsuario); // PUT  
 app.delete("/usuario", verifyJWT, deletarUsuario); // DELETE 
 
-// Cadastro de Usuário
+// Cadastro de Usuario
 app.post("/register", register); // POST
 
-// Login de Usuário
+
+// Login de Usuario
 app.post("/login", login); // POST 
 
-// Atualização de Senha
+// Atualizacao de Senha
 app.put("/usuario/senha", verifyJWT, updatePassword); // PUT
 
 app.listen(PORT, () => {

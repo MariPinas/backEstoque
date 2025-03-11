@@ -47,10 +47,7 @@ export async function deletarUsuario(
 }
 
 // @Get("id")
-export async function filtrarUsuario(
-  req: CustomRequest,
-  res: Response
-): Promise<Response> {
+export async function filtrarUsuario(req: CustomRequest, res: Response): Promise<Response> {
   try {
     const userId = req.user?.id;
 
@@ -66,9 +63,10 @@ export async function filtrarUsuario(
 
     return res.status(200).json({
       mensagem: "Usuário encontrado com sucesso!",
-      usuario: usuario,
+      usuario: usuario,  
     });
   } catch (error: any) {
     return res.status(400).json({ message: error.message });
   }
 }
+
