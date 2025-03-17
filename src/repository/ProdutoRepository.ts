@@ -178,4 +178,27 @@ export class ProdutoRepository {
       throw err;
     }
   }
+
+  async getMaiorQuantidade(usuario_id: number): Promise<Produto | null> {
+    console.log("chegou repo")
+    const query = `
+      SELECT * 
+      FROM estoque.Produto 
+      WHERE usuario_id = ? 
+      ORDER BY quantidade DESC 
+      LIMIT 1
+    `;
+
+    try {
+      const resultado = await executarComandoSQL(query, [usuario_id]);
+      if (resultado.length > 0) {
+        return resultado[0];  //primeiro produto da lista
+      } else {
+        return null; 
+      }
+    } catch (err: any) {
+      console.error(`Erro ao buscar o produto com maior quantidade: ${err}`);
+      throw err;
+    }
+  }
 }

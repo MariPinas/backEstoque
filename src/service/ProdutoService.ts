@@ -58,4 +58,11 @@ export class ProdutoService {
     );
     return produtos;
   }
+  async getMaiorQuantidade(usuario_id: number): Promise<Produto | null> {
+    const produto = await this.productRepository.getMaiorQuantidade(usuario_id);
+    if (!produto) {
+      throw new Error("Nenhum produto com quantidade disponível foi encontrado.");
+    }
+    return produto;
+  }
 }

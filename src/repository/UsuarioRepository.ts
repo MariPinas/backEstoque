@@ -108,7 +108,7 @@ export class UsuarioRepository {
   async findByEmail(email: string): Promise<Usuario | null> {
     console.log("MANO")
     const query = 'SELECT * FROM Usuario WHERE email = ?'; 
-    
+    console.log(email)
     try {
         const resultado = await executarComandoSQL(query, [email]);
 

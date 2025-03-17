@@ -5,6 +5,7 @@ import {
   atualizarProduto,
   deletarProduto,
   filtrarProduto,
+  calcularDashboard,
 } from "./controller/ProdutoController";
 import {
   atualizarUsuario,
@@ -31,6 +32,7 @@ app.get("/produto/:id", verifyJWT, filtrarProduto); // GET BY ID
 app.put("/produto/:id", verifyJWT, atualizarProduto); // PUT
 app.delete("/produto/:id", verifyJWT, deletarProduto); // DELETE
 
+app.get("/dashboard", verifyJWT, calcularDashboard);
 // Usuários
 app.get("/usuario", verifyJWT, filtrarUsuario); // GET 
 app.put("/usuario", verifyJWT, atualizarUsuario); // PUT  
