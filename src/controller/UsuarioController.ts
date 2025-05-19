@@ -12,8 +12,8 @@ export async function atualizarUsuario(req: CustomRequest, res: Response) {
     if (!usuarioId) {
       return res.status(403).json({ message: "Usuário não autenticado!" });
     }
-    console.log(dados, "dados controller")
-    console.log(usuarioId, "usu controller")
+    console.log(dados, "dados controller");
+    console.log(usuarioId, "usu controller");
     const newUser = await usuarioService.atualizarUsuario(usuarioId, dados);
     res.status(200).json({
       mensagem: "Usuário atualizado com sucesso!",
@@ -47,7 +47,10 @@ export async function deletarUsuario(
 }
 
 // @Get("id")
-export async function filtrarUsuario(req: CustomRequest, res: Response): Promise<Response> {
+export async function filtrarUsuario(
+  req: CustomRequest,
+  res: Response
+): Promise<Response> {
   try {
     const userId = req.user?.id;
 
@@ -63,10 +66,9 @@ export async function filtrarUsuario(req: CustomRequest, res: Response): Promise
 
     return res.status(200).json({
       mensagem: "Usuário encontrado com sucesso!",
-      usuario: usuario,  
+      usuario: usuario,
     });
   } catch (error: any) {
     return res.status(400).json({ message: error.message });
   }
 }
-

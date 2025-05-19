@@ -12,18 +12,19 @@ export class ProdutoRepository {
   }
   private async createUsuarioTable() {
     const usuarioRepo = UsuarioRepository.getInstance();
+    await usuarioRepo.createUsuarioTable();
   }
 
   private async createProdutoTable() {
     const query = `
-        CREATE TABLE IF NOT EXISTS estoque.Produto (
+        CREATE TABLE IF NOT EXISTS estoque.produto (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(255) NOT NULL,
             preco DECIMAL(10, 2) NOT NULL,
             descricao TINYTEXT,
             quantidade INT NOT NULL,
             usuario_id INT NOT NULL,
-            FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
+            FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
             
         )`;
 
@@ -37,7 +38,7 @@ export class ProdutoRepository {
 
   async insertProduto(produto: Produto): Promise<Produto> {
     const query =
-      "INSERT INTO estoque.Produto (nome, preco, descricao, quantidade, usuario_id) VALUES (?, ?, ?, ?, ?)";
+      "INSERT INTO estoque.produto (nome, preco, descricao, quantidade, usuario_id) VALUES (?, ?, ?, ?, ?)";
 
     try {
       console.log("repo");
@@ -60,10 +61,10 @@ export class ProdutoRepository {
   }
 
   async updateProduto(produto: Produto): Promise<void> {
-    console.log("id", produto.id)
-    console.log("aaaaaaa4")
-    console.log("user", produto.usuario_id)
-    let query = "UPDATE estoque.Produto SET";
+    console.log("id", produto.id);
+    console.log("aaaaaaa4");
+    console.log("user", produto.usuario_id);
+    let query = "UPDATE estoque.produto SET";
     const params: Array<any> = [];
     const fields: string[] = [];
 
@@ -112,7 +113,7 @@ export class ProdutoRepository {
   }
 
   async deleteProduto(produto: Produto): Promise<Produto> {
-    const query = "DELETE FROM estoque.Produto where id = ? AND usuario_id= ?;";
+    const query = "DELETE FROM estoque.produto where id = ? AND usuario_id= ?;";
 
     try {
       const resultado = await executarComandoSQL(query, [
@@ -137,7 +138,7 @@ export class ProdutoRepository {
   }
 
   async filterProduto(id: number, usuario_id: number): Promise<Produto[]> {
-    const query = "SELECT * FROM estoque.Produto where id = ? and usuario_id=?";
+    const query = "SELECT * FROM estoque.produto where id = ? and usuario_id=?";
 
     try {
       const resultado = await executarComandoSQL(query, [id, usuario_id]);
@@ -159,7 +160,7 @@ export class ProdutoRepository {
   }
 
   async filterAllProduto(usuario_id: number): Promise<Produto[]> {
-    const query = "SELECT * FROM estoque.Produto where usuario_id = ?";
+    const query = "SELECT * FROM estoque.produto where usuario_id = ?";
 
     try {
       const resultado = await executarComandoSQL(query, [usuario_id]);
@@ -187,10 +188,10 @@ export class ProdutoRepository {
   }
 
   async getMaiorQuantidade(usuario_id: number): Promise<Produto | null> {
-    console.log("chegou repo")
+    console.log("chegou repo");
     const query = `
       SELECT * 
-      FROM estoque.Produto 
+      FROM estoque.produto 
       WHERE usuario_id = ? 
       ORDER BY quantidade DESC 
       LIMIT 1
@@ -199,9 +200,9 @@ export class ProdutoRepository {
     try {
       const resultado = await executarComandoSQL(query, [usuario_id]);
       if (resultado.length > 0) {
-        return resultado[0];  //primeiro produto da lista
+        return resultado[0]; //primeiro produto da lista
       } else {
-        return null; 
+        return null;
       }
     } catch (err: any) {
       console.error(`Erro ao buscar o produto com maior quantidade: ${err}`);
@@ -209,4 +210,3 @@ export class ProdutoRepository {
     }
   }
 }
-

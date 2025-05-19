@@ -2,24 +2,23 @@ import { executarComandoSQL } from "../db/mysql";
 import { Produto } from "../model/Produto";
 import { Usuario } from "../model/Usuario";
 
-
 export class UsuarioRepository {
   private static instance: UsuarioRepository;
 
   constructor() {
-    this.createTable();
+    this.createUsuarioTable();
   }
 
   public static getInstance(): UsuarioRepository {
     if (!this.instance) {
-        this.instance = new UsuarioRepository();
+      this.instance = new UsuarioRepository();
     }
-    return this.instance
-}
+    return this.instance;
+  }
 
-  public async createTable() {
+  public async createUsuarioTable() {
     const query = `
-        CREATE TABLE IF NOT EXISTS estoque.Usuario (
+        CREATE TABLE IF NOT EXISTS estoque.usuario (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(255) NOT NULL,
             email VARCHAR(255) NOT NULL,
@@ -38,7 +37,7 @@ export class UsuarioRepository {
     console.log("teste register usu repo");
     console.log(usuario);
     const query =
-      "INSERT INTO estoque.Usuario (nome, email, senha) VALUES (?, ?, ?)";
+      "INSERT INTO estoque.usuario (nome, email, senha) VALUES (?, ?, ?)";
     try {
       const resultado = await executarComandoSQL(query, [
         usuario.nome,
@@ -56,10 +55,10 @@ export class UsuarioRepository {
     }
   }
   async updateUsuario(usuario: Usuario): Promise<Usuario> {
-    console.log(usuario.id, "usuario id repository")
+    console.log(usuario.id, "usuario id repository");
     let query = "UPDATE estoque.Usuario SET";
     const values: any[] = [];
-  
+
     if (usuario.nome) {
       query += " nome = ?,";
       values.push(usuario.nome);
@@ -75,7 +74,7 @@ export class UsuarioRepository {
     query = query.slice(0, -1);
     query += " WHERE id = ?";
     values.push(usuario.id);
-  
+
     try {
       const resultado = await executarComandoSQL(query, values);
       console.log("Usuário atualizado com sucesso, ID: ", resultado);
@@ -87,10 +86,9 @@ export class UsuarioRepository {
       throw err;
     }
   }
-  
 
   async deleteUsuario(id: number): Promise<void> {
-    const query = "DELETE FROM estoque.Usuario WHERE id = ?";
+    const query = "DELETE FROM estoque.usuario WHERE id = ?";
     try {
       const resultado = await executarComandoSQL(query, [id]);
       console.log(`Usuário com ID ${id} deletado com sucesso:`, resultado);
@@ -100,53 +98,55 @@ export class UsuarioRepository {
     }
   }
 
-  async filterUsuarioById(id: number): Promise<Usuario & { produtos: Produto[] }> {
-    const usuarioQuery = "SELECT * FROM estoque.Usuario WHERE id = ?";
-    const produtosQuery = "SELECT * FROM estoque.Produto WHERE usuario_id = ?";
+  async filterUsuarioById(
+    id: number
+  ): Promise<Usuario & { produtos: Produto[] }> {
+    const usuarioQuery = "SELECT * FROM estoque.usuario WHERE id = ?";
+    const produtosQuery = "SELECT * FROM estoque.produto WHERE usuario_id = ?";
 
     try {
-        const usuarioResultado = await executarComandoSQL(usuarioQuery, [id]);
-        
-        if (usuarioResultado.length === 0) {
-            throw new Error("Usuário não encontrado");
-        }
-        
-        const usuario = usuarioResultado[0];
+      const usuarioResultado = await executarComandoSQL(usuarioQuery, [id]);
 
-        const produtosResultado = await executarComandoSQL(produtosQuery, [id]);
+      if (usuarioResultado.length === 0) {
+        throw new Error("Usuário não encontrado");
+      }
 
-        return {
-            ...usuario,
-            produtos: produtosResultado, 
-        };
+      const usuario = usuarioResultado[0];
+
+      const produtosResultado = await executarComandoSQL(produtosQuery, [id]);
+
+      return {
+        ...usuario,
+        produtos: produtosResultado,
+      };
     } catch (err) {
-        console.error("Erro ao filtrar usuário:", err);
-        throw err;
+      console.error("Erro ao filtrar usuário:", err);
+      throw err;
     }
-}
+  }
 
   async findByEmail(email: string): Promise<Usuario | null> {
-    const query = 'SELECT * FROM Usuario WHERE email = ?'; 
-    
+    const query = "SELECT * FROM estoque.usuario WHERE email = ?";
+
     try {
-        const resultado = await executarComandoSQL(query, [email]);
+      const resultado = await executarComandoSQL(query, [email]);
 
-        if (resultado.length === 0) {
-            return null; // nao achou usuario
-        }
+      if (resultado.length === 0) {
+        return null; // nao achou usuario
+      }
 
-        //mapea os dados do banco para o usuario
-        const user = new Usuario(
-            resultado[0].id,
-            resultado[0].nome,
-            resultado[0].email,
-            resultado[0].senha,
-        );
+      //mapea os dados do banco para o usuario
+      const user = new Usuario(
+        resultado[0].id,
+        resultado[0].nome,
+        resultado[0].email,
+        resultado[0].senha
+      );
 
-        return user;
+      return user;
     } catch (error) {
-        console.error('Erro ao buscar o usuário por e-mail:', error);
-        throw error;
+      console.error("Erro ao buscar o usuário por e-mail:", error);
+      throw error;
     }
-}
+  }
 }
